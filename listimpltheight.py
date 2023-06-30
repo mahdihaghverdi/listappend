@@ -1,14 +1,11 @@
 """Python 3.8 list_resize implementation"""
-import csv
+from math import floor
 from sys import getsizeof
 
-DEBUG = False  # turn to True to print things
 NULL = ...
 Py_SSIZE_MAX = 2 ** 31
 PyExc_OverflowError = OverflowError
 
-information = []
-all_information = []
 
 class PyListObject:
     def __init__(self):
@@ -55,12 +52,12 @@ def list_resize(self: PyListObject, newsize: int) -> int:
     allocated = self.allocated
 
     # Bypass realloc()
-    if allocated >= newsize >= (allocated >> 1):
+    if allocated >= newsize >= floor(allocated >> 1):
         assert self.ob_item != NULL or newsize == 0
         self.ob_size = newsize
         return 0
 
-    new_allocated = newsize + (newsize >> 3) + (3 if newsize < 9 else 6)
+    new_allocated = newsize + floor(newsize >> 3) + (3 if newsize < 9 else 6)
 
     if new_allocated > Py_SSIZE_MAX / 1:  # assume PyObject pointer is 1 byte
         PyErr_NoMemory()
@@ -82,7 +79,6 @@ def list_resize(self: PyListObject, newsize: int) -> int:
     self.ob_item = items
     self.ob_size = newsize
     self.allocated = new_allocated
-    information.append((getsizeof(self.ob_item), new_allocated - allocated))
     return 0
 
 
@@ -95,7 +91,6 @@ def app1(self: PyListObject, v: object):
                         "cannot add more objects to list")
         return -1
 
-    all_information.append((len(list(filter(lambda x: x != '*', self.ob_item))), getsizeof(self.ob_item)))
     if list_resize(self, n + 1) < 0:
         return -1
 
@@ -111,36 +106,8 @@ def list_append(self: PyListObject, obj: object):
 
 if __name__ == '__main__':
     lst = PyListObject()
-    if DEBUG:
-        print(lst)
-    for num in range(1, 129):
+    print(lst)
+    for num in range(128):
         list_append(lst, num)
-        if DEBUG:
-            if num < 9:
-                print(lst)
-
-    with (
-        open('3.8statsum.csv', 'w', newline='') as sum_f,
-        open('3.8statall.csv', 'w', newline='') as all_f
-    ):
-        fieldnames = ['list_size', 'new_alloc_delta']
-        writer = csv.DictWriter(sum_f, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerows(
-            [
-                {'list_size': info[0], 'new_alloc_delta': info[1]}
-                for info in information
-            ]
-        )
-
-        fieldnames = ['list_size', 'getsizeof']
-        writer = csv.DictWriter(all_f, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerows(
-            [
-                {'list_size': info[0], 'getsizeof': info[1]}
-                for info in all_information
-            ]
-        )
+        if num < 9:
+            print(lst)
