@@ -103,10 +103,5 @@ def list_append(self: PyListObject, obj: object):
     return NULL
 
 
-if __name__ == '__main__':
-    lst = PyListObject()
-    print(lst)
-    for num in range(128):
-        list_append(lst, num)
-        if num < 9:
-            print(lst)
+lst = PyListObject()
+lst.append('Py 3.8')

@@ -101,10 +101,8 @@ def list_append(self, obj):
     return None
 
 
-if __name__ == '__main__':
-    lst = PyListObject()
-    print(lst)
-    for num in range(128):
-        list_append(lst, num)
-        if num < 15:
-            print(lst)
+lst = PyListObject()
+for num in range(16):
+    lst.append(num)
+
+lst.append("Mahdi")
