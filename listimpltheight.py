@@ -1,6 +1,5 @@
 """Python 3.8 list_resize implementation"""
 from math import floor
-from sys import getsizeof
 
 NULL = ...
 Py_SSIZE_MAX = 2 ** 31
