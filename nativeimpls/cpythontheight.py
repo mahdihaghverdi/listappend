@@ -1,4 +1,5 @@
 import csv
+import pathlib
 from sys import getsizeof
 
 
@@ -14,7 +15,7 @@ def list_size(size: int):
 
 information = list_size(126)
 
-with open('3.8cpystat.csv', 'w', newline='') as all_f:
+with open('./stats/3.8cpystat.csv', 'w', newline='') as all_f:
     fieldnames = ['list_size', 'getsizeof']
     writer = csv.DictWriter(all_f, fieldnames=fieldnames)
 
