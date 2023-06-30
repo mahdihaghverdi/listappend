@@ -1,8 +1,11 @@
 """Python 3.8 list_resize implementation"""
+from rich import print
 
 NULL = ...
 Py_SSIZE_MAX = 2 ** 31
 PyExc_OverflowError = OverflowError
+
+information = {}
 
 
 class PyListObject:
@@ -74,6 +77,7 @@ def list_resize(self: PyListObject, newsize: int) -> int:
     self.ob_item = items
     self.ob_size = newsize
     self.allocated = new_allocated
+    information[self.ob_size] = new_allocated - allocated
     return 0
 
 
@@ -97,3 +101,13 @@ def list_append(self: PyListObject, obj: object):
     if app1(self, obj) == 0:
         return None
     return NULL
+
+
+lst = PyListObject()
+print(lst)
+for num in range(1, 128):
+    list_append(lst, num)
+    if num < 9:
+        print(lst)
+
+print(information)
