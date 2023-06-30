@@ -39,8 +39,42 @@ def PyErr_NoMemory():
     PyErr_SetString(MemoryError, "No Memory")
 
 
+def PyMem_Reaclloc(new_allocated_bytes, self):
+    return self.ob_item + ['*'] * (new_allocated_bytes - self.ob_size)
+
+
 def list_resize(self: PyListObject, newsize: int) -> int:
-    pass
+    allocated = self.allocated
+
+    # Bypass realloc()
+    if allocated >= newsize >= (allocated >> 1):
+        assert self.ob_item != NULL or newsize == 0
+        self.ob_size = newsize
+        return 0
+
+    new_allocated = newsize + (newsize >> 3) + (3 if newsize < 9 else 6)
+
+    if new_allocated > Py_SSIZE_MAX / 1:  # assume PyObject pointer is 1 byte
+        PyErr_NoMemory()
+        return -1
+
+    if newsize == 0:
+        new_allocated = 0
+
+    if new_allocated <= Py_SSIZE_MAX / 1:
+        new_allocated_bytes = new_allocated * 1
+        items = PyMem_Reaclloc(new_allocated_bytes, self)
+    else:
+        items = NULL
+
+    if items == NULL:
+        PyErr_NoMemory()
+        return -1
+
+    self.ob_item = items
+    self.ob_size = newsize
+    self.allocated = new_allocated
+    return 0
 
 
 def app1(self: PyListObject, v: object):
