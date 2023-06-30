@@ -8,7 +8,7 @@ Py_SSIZE_MAX = 2 ** 31
 PyExc_OverflowError = OverflowError
 
 information = []
-
+all_information = []
 
 class PyListObject:
     def __init__(self):
@@ -95,6 +95,7 @@ def app1(self: PyListObject, v: object):
                         "cannot add more objects to list")
         return -1
 
+    all_information.append((len(list(filter(lambda x: x != '*', self.ob_item))), getsizeof(self.ob_item)))
     if list_resize(self, n + 1) < 0:
         return -1
 
@@ -118,14 +119,28 @@ if __name__ == '__main__':
             if num < 9:
                 print(lst)
 
-    with open('3.8stat.csv', 'w', newline='') as f:
+    with (
+        open('3.8statsum.csv', 'w', newline='') as sum_f,
+        open('3.8statall.csv', 'w', newline='') as all_f
+    ):
         fieldnames = ['list_size', 'new_alloc_delta']
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(sum_f, fieldnames=fieldnames)
 
         writer.writeheader()
         writer.writerows(
             [
                 {'list_size': info[0], 'new_alloc_delta': info[1]}
                 for info in information
+            ]
+        )
+
+        fieldnames = ['list_size', 'getsizeof']
+        writer = csv.DictWriter(all_f, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerows(
+            [
+                {'list_size': info[0], 'getsizeof': info[1]}
+                for info in all_information
             ]
         )
