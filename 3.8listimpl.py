@@ -1,11 +1,14 @@
 """Python 3.8 list_resize implementation"""
+import csv
+
 from rich import print
 
+DEBUG = False  # turn to True to print things
 NULL = ...
 Py_SSIZE_MAX = 2 ** 31
 PyExc_OverflowError = OverflowError
 
-information = {}
+information = []
 
 
 class PyListObject:
@@ -77,7 +80,7 @@ def list_resize(self: PyListObject, newsize: int) -> int:
     self.ob_item = items
     self.ob_size = newsize
     self.allocated = new_allocated
-    information[self.ob_size] = new_allocated - allocated
+    information.append((self.ob_size, new_allocated - allocated))
     return 0
 
 
@@ -103,11 +106,24 @@ def list_append(self: PyListObject, obj: object):
     return NULL
 
 
-lst = PyListObject()
-print(lst)
-for num in range(1, 128):
-    list_append(lst, num)
-    if num < 9:
+if __name__ == '__main__':
+    lst = PyListObject()
+    if DEBUG:
         print(lst)
+    for num in range(1, 129):
+        list_append(lst, num)
+        if DEBUG:
+            if num < 9:
+                print(lst)
 
-print(information)
+    with open('3.8stat.csv', 'w', newline='') as f:
+        fieldnames = ['len', 'new_alloc_delta']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerows(
+            [
+                {'len': info[0], 'new_alloc_delta': info[1]}
+                for info in information
+            ]
+        )
