@@ -4,7 +4,7 @@ from sys import getsizeof
 
 import matplotlib.pyplot as plt
 
-from listimpltheight import PyListObject
+from impls.listimpltheight import PyListObject
 
 
 def list_size(size: int):
