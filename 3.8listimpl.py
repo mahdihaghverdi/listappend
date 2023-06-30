@@ -18,6 +18,9 @@ class PyListObject:
         self.ob_item = []
         self.allocated = 0
 
+    def append(self, obj: object) -> None:
+        return list_append(self, obj)
+
     def __str__(self):
         return (
             f"{self.__class__.__name__}"
@@ -106,24 +109,26 @@ def list_append(self: PyListObject, obj: object):
     return NULL
 
 
-if __name__ == '__main__':
-    lst = PyListObject()
-    if DEBUG:
-        print(lst)
-    for num in range(1, 129):
-        list_append(lst, num)
-        if DEBUG:
-            if num < 9:
-                print(lst)
+lst = PyListObject()
 
-    with open('3.8stat.csv', 'w', newline='') as f:
-        fieldnames = ['len', 'new_alloc_delta']
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerows(
-            [
-                {'len': info[0], 'new_alloc_delta': info[1]}
-                for info in information
-            ]
-        )
+# if __name__ == '__main__':
+#     lst = PyListObject()
+#     if DEBUG:
+#         print(lst)
+#     for num in range(1, 129):
+#         list_append(lst, num)
+#         if DEBUG:
+#             if num < 9:
+#                 print(lst)
+#
+#     with open('3.8stat.csv', 'w', newline='') as f:
+#         fieldnames = ['len', 'new_alloc_delta']
+#         writer = csv.DictWriter(f, fieldnames=fieldnames)
+#
+#         writer.writeheader()
+#         writer.writerows(
+#             [
+#                 {'len': info[0], 'new_alloc_delta': info[1]}
+#                 for info in information
+#             ]
+#         )
