@@ -13,7 +13,7 @@ def list_size(size: int):
     return info_list
 
 
-information = list_size(456)
+information = list_size(128)
 
 with open('./stats/3.11cpystat.csv', 'w', newline='') as all_f:
     fieldnames = ['list_size', 'getsizeof']
