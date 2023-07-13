@@ -1,5 +1,4 @@
 import csv
-import pathlib
 from sys import getsizeof
 
 
